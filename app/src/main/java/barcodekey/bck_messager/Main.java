@@ -17,8 +17,8 @@ public class Main extends Activity {
         setContentView(R.layout.activity_main);
     }
 
-    public void crypt(View view) {
-        Intent encryptAPI = new Intent("app.barcodekey.encryptAPI");
+    public void encrypt(View view) {
+        Intent encryptAPI = new Intent("app.barcodekey");
         EditText editText = (EditText) findViewById(R.id.message);
         String message = editText.getText().toString();
         encryptAPI.putExtra(EXTRA_MESSAGE, message);
@@ -26,7 +26,7 @@ public class Main extends Activity {
     }
 
     public void decrypt(View view) {
-        Intent decryptAPI = new Intent("app.barcodekey.decryptAPI");
+        Intent decryptAPI = new Intent("app.barcodekey");
         EditText editText = (EditText) findViewById(R.id.message);
         String message = editText.getText().toString();
         decryptAPI.putExtra(EXTRA_MESSAGE, message);
