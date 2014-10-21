@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BCK-messager</string>
+    <string name="message_hint">Write a message</string>
+    <string name="button_encrypt">Encrypt</string>
+    <string name="button_decrypt">Decrypt</string>
+
+</resources>
