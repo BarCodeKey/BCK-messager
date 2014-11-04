@@ -1,4 +1,4 @@
-package barcodekey.bck_messager;
+package app.security;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -15,6 +15,8 @@ import android.widget.EditText;
 
 import java.util.List;
 
+import barcodekey.bck_messager.R;
+
 
 public class Main extends Activity {
 
@@ -30,13 +32,11 @@ public class Main extends Activity {
         bind();
     }
 
-    public void encryptButton(View view) throws RemoteException {
-        //"app.barcodekey"
+    public void encryptButton(View view) {
 
         EditText editText = (EditText) findViewById(R.id.message);
 
         String message = editText.getText().toString();
-        System.out.println("nappia painettu");
         if(mIsBind) {
             try {
                 result = mService.encrypt(message.getBytes());
@@ -45,20 +45,31 @@ public class Main extends Activity {
                 e.printStackTrace();
             }
 
-            System.out.println(result);
+            System.out.println("encrypt:  "+result);
         }
     }
 
     public void decryptButton(View view) {
-        System.out.println("decrypt painettu");
+        EditText editText = (EditText) findViewById(R.id.message);
+
+        String message = editText.getText().toString();
+
+        if(mIsBind) {
+            try {
+                result = mService.decrypt(message.getBytes());
+            } catch (RemoteException e) {
+                System.out.println("EI ONNISTUNUT");
+                e.printStackTrace();
+            }
+            System.out.println("decrypt:   "+result);
+        }
     }
-    // ei pääse koskaan tänne....?
+
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
             mService = IRemoteService.Stub.asInterface((IBinder)service);
-            System.out.println("ollaan connectionissa");
-            System.out.println(mService+"??????");
+
             if(mService == null) {
                 System.out.println("EI LÖYTYNYT");
             }
@@ -72,10 +83,9 @@ public class Main extends Activity {
     };
 
     public void bind() {
-        Intent i = new Intent(IRemoteService.class.getName());
+        Intent i = new Intent("app.security.RemoteService");
         mIsBind =  bindService(i,
                 mConnection, Context.BIND_AUTO_CREATE);
-        System.out.println("bindi tehty: "+mIsBind);
 
     }
     public void unBind(){
@@ -87,5 +97,8 @@ public class Main extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         unBind();
+    }
+    public String getResult(){
+        return result;
     }
 }
