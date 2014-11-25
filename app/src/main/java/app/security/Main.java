@@ -24,7 +24,7 @@ public class Main extends Activity {
     public final static String EXTRA_MESSAGE = "barcodekey.bck_messager.MESSAGE";
     IRemoteService mService = null;
     private Boolean mIsBind = false;
-    private String result;
+    private byte[] result;
     private String type = "P-521";
     private String uri = "";
 
@@ -49,7 +49,7 @@ public class Main extends Activity {
             }
             Toast toast = Toast.makeText(getApplicationContext(),"encrypt: "+result,Toast.LENGTH_SHORT);
             toast.show();
-            System.out.println("encrypt:  "+result);
+            System.out.println("encrypt:  "+ new String(result));
         }
     }
 
@@ -60,14 +60,14 @@ public class Main extends Activity {
 
         if(mIsBind) {
             try {
-                result = mService.decrypt(type,message.getBytes(),uri);
+                result = mService.decrypt(type, message.getBytes(), uri);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
             Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
             toast.show();
-            System.out.println("decrypt:   "+result);
+            System.out.println("decrypt:   "+new String(result));
         }
     }
 
@@ -105,6 +105,6 @@ public class Main extends Activity {
         unBind();
     }
     public String getResult(){
-        return result;
+        return new String(result);
     }
 }
