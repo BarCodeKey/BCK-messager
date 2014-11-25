@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,6 +33,7 @@ public class Main extends Activity {
     private byte[] result;
     private String type = "P-521";
     private String lookupKey = "";
+    private String phoneNumber = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,30 @@ public class Main extends Activity {
             Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
             toast.show();
             System.out.println("decrypt:   "+new String(result));
+        }
+    }
+
+    public void sendButton(View view) {
+        EditText editText = (EditText) findViewById(R.id.message);
+        if (phoneNumber != null && !phoneNumber.equals("")){
+            String message = editText.getText().toString();
+         //   sendSMSMessage(message);
+        }
+    }
+
+    protected void sendSMSMessage(String message) {
+        System.out.println("Send SMS");
+
+        try {
+            SmsManager smsManager = SmsManager.getDefault();
+            smsManager.sendTextMessage(phoneNumber, null, message, null, null);
+            Toast.makeText(getApplicationContext(), "SMS sent.",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(),
+                    "SMS faild, please try again.",
+                    Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
@@ -140,11 +166,35 @@ public class Main extends Activity {
             idx = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
             String name = cursor.getString(idx);
 
+            phoneNumber = readMimetypeData2(lookupKey, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE);
+
             System.out.println("name: " + name);
             System.out.println("lookupkey: " + lookupKey);
 
-            updatePickedContactLabel(name);
+            updatePickedContactLabel(name + " " + phoneNumber);
         }
+    }
+
+    public String readMimetypeData2(String lookupKey, String mimetype){
+        String value;
+        Cursor cursor = getContentResolver().query(
+                ContactsContract.Data.CONTENT_URI,
+                new String[] {ContactsContract.Data.DATA1},
+                ContactsContract.Data.LOOKUP_KEY + "=? AND " + ContactsContract.Data.MIMETYPE + "=?",
+                new String[]{lookupKey,mimetype},
+                null);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    value = cursor.getString(0);
+                    cursor.close();
+                    return value;
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return null;
     }
 
     private void updatePickedContactLabel(String name) {

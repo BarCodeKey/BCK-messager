@@ -66,6 +66,15 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_gravity="center_horizontal" />
 
+        <Button
+            android:id="@+id/sendSMS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send_sms_false"
+            android:onClick="sendButton"
+            android:layout_gravity="center_horizontal" />
+
         </LinearLayout>
+
 
 </LinearLayout>
