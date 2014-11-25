@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class Main extends Activity {
     IRemoteService mService = null;
     private Boolean mIsBind = false;
     private String result;
+    private String type = "P-521";
+    private String uri = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,12 +42,13 @@ public class Main extends Activity {
         String message = editText.getText().toString();
         if(mIsBind) {
             try {
-                result = mService.encrypt(message.getBytes());
+                result = mService.encrypt(type,message.getBytes(),uri);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
-
+            Toast toast = Toast.makeText(getApplicationContext(),"encrypt: "+result,Toast.LENGTH_SHORT);
+            toast.show();
             System.out.println("encrypt:  "+result);
         }
     }
@@ -56,11 +60,13 @@ public class Main extends Activity {
 
         if(mIsBind) {
             try {
-                result = mService.decrypt(message.getBytes());
+                result = mService.decrypt(type,message.getBytes(),uri);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
+            Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
+            toast.show();
             System.out.println("decrypt:   "+result);
         }
     }
