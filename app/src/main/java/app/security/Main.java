@@ -49,7 +49,7 @@ public class Main extends Activity {
         String message = editText.getText().toString();
         if(mIsBind) {
             try {
-                result = mService.encrypt(type,message.getBytes(),lookupKey);
+                result = mService.encrypt(type, message.getBytes(), lookupKey);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
