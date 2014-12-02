@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -35,32 +36,78 @@ public class Main extends Activity {
     private String lookupKey = "";
     private String phoneNumber = "";
 
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            System.out.println("onServiceConnected, laitetaan mService!");
+            mService = IRemoteService.Stub.asInterface((IBinder)service);
+
+            if(mService == null) {
+                System.out.println("EI LÖYTYNYT");
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            System.out.println("mainin onServiceDisconnected");
+            mService = null;
+            mIsBind = false;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("mainin onCreate");
+        if (mConnection == null) System.out.println("mConnection null");
+
         super.onCreate(savedInstanceState);
+        if (mService == null) System.out.println("mService null");
+        if (mConnection == null) System.out.println("mConnection null");
+
         setContentView(R.layout.activity_main);
+        if (mService == null) System.out.println("mService null");
+        if (mConnection == null) System.out.println("mConnection null");
+
         bind();
+        if (mService == null) System.out.println("mService null");
+        if (mConnection == null) System.out.println("mConnection null");
+
     }
 
+
+
+
     public void encryptButton(View view) {
+        System.out.println("mainin encryptButton");
 
         EditText editText = (EditText) findViewById(R.id.message);
 
         String message = editText.getText().toString();
+        System.out.println("encryptataan message: " + message);
         if(mIsBind) {
+            System.out.println("on sitoutunut");
+            if (mService == null){
+                System.out.println("ÄLÄMÖLÖÖÖÖ");
+            }
             try {
                 result = mService.encrypt(type, message.getBytes(), lookupKey);
+                System.out.println("saatiin tulos: " + result);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
+            System.out.println("toustataan");
             Toast toast = Toast.makeText(getApplicationContext(),"encrypt: "+result,Toast.LENGTH_SHORT);
             toast.show();
             System.out.println("encrypt:  " + new String(result));
+            updateMessageField(new String(result));
         }
     }
 
     public void decryptButton(View view) {
+        System.out.println("mainin decryptButton");
+
         EditText editText = (EditText) findViewById(R.id.message);
 
         String message = editText.getText().toString();
@@ -76,6 +123,7 @@ public class Main extends Activity {
             Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
             toast.show();
             System.out.println("decrypt:   "+new String(result));
+            updateMessageField(new String(result));
         }
     }
 
@@ -103,27 +151,15 @@ public class Main extends Activity {
         }
     }
 
-    private ServiceConnection mConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            mService = IRemoteService.Stub.asInterface((IBinder)service);
-
-            if(mService == null) {
-                System.out.println("EI LÖYTYNYT");
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mService = null;
-            mIsBind = false;
-        }
-    };
 
     public void bind() {
+        System.out.println("mainin bind");
         Intent i = new Intent("app.security.RemoteService");
-        mIsBind =  bindService(i,
-                mConnection, Context.BIND_AUTO_CREATE);
+        i.putExtra("package_name", "perunaohjelma");
+        i.putExtra(Intent.EXTRA_UID, Binder.getCallingUid());
+
+        mIsBind =  bindService(i, mConnection, Context.BIND_AUTO_CREATE);
+        System.out.println("bindaus: " + mIsBind);
 
     }
     public void unBind(){
@@ -200,6 +236,11 @@ public class Main extends Activity {
     private void updatePickedContactLabel(String name) {
         TextView textView = (TextView) findViewById(R.id.picked);
         textView.setText(name);
+    }
+
+    private void updateMessageField(String message) {
+        EditText editText = (EditText) findViewById(R.id.message);
+        editText.setText(message);
     }
 
     public void doLaunchContactPicker(View view) {
