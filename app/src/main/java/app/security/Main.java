@@ -85,23 +85,29 @@ public class Main extends Activity {
 
         String message = editText.getText().toString();
         System.out.println("encryptataan message: " + message);
+        System.out.println("message byteinä: " + message.getBytes());
         if(mIsBind) {
             System.out.println("on sitoutunut");
             if (mService == null){
                 System.out.println("ÄLÄMÖLÖÖÖÖ");
             }
             try {
-                result = mService.encrypt(type, message.getBytes(), lookupKey);
+                result = mService.encrypt(message.getBytes(), lookupKey);
                 System.out.println("saatiin tulos: " + result);
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
-            System.out.println("toustataan");
-            Toast toast = Toast.makeText(getApplicationContext(),"encrypt: "+result,Toast.LENGTH_SHORT);
-            toast.show();
-            System.out.println("encrypt:  " + new String(result));
-            updateMessageField(new String(result));
+            if (result != null) {
+                System.out.println("toustataan");
+                Toast toast = Toast.makeText(getApplicationContext(), "encrypt: " + result, Toast.LENGTH_SHORT);
+                toast.show();
+                System.out.println("encrypt:  " + new String(result));
+                updateMessageField(new String(result));
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(),"encrypt failed",Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
     }
 
@@ -111,19 +117,28 @@ public class Main extends Activity {
         EditText editText = (EditText) findViewById(R.id.message);
 
         String message = editText.getText().toString();
+        System.out.println("decryptataan message: " + message);
+        System.out.println("message byteinä: " + message.getBytes());
 
         if(mIsBind) {
             try {
-                result = mService.decrypt(type, message.getBytes(), lookupKey);
+                result = mService.decrypt(message.getBytes(), lookupKey);
 
             } catch (RemoteException e) {
                 System.out.println("EI ONNISTUNUT");
                 e.printStackTrace();
             }
-            Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
-            toast.show();
-            System.out.println("decrypt:   "+new String(result));
-            updateMessageField(new String(result));
+
+            if (result != null){
+                Toast toast = Toast.makeText(getApplicationContext(),"decrypt: "+result,Toast.LENGTH_SHORT);
+                toast.show();
+                System.out.println("decrypt:   "+new String(result));
+                updateMessageField(new String(result));
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(),"decrypt failed",Toast.LENGTH_SHORT);
+                toast.show();
+            }
+
         }
     }
 
@@ -131,7 +146,7 @@ public class Main extends Activity {
         EditText editText = (EditText) findViewById(R.id.message);
         if (phoneNumber != null && !phoneNumber.equals("")){
             String message = editText.getText().toString();
-         //   sendSMSMessage(message);
+            sendSMSMessage(message);
         }
     }
 

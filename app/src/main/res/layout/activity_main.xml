@@ -41,6 +41,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/message_hint"
+            android:singleLine="false"
+            android:lines="3"
             android:inputType="text"
             android:layout_gravity="center_horizontal" />
 
@@ -66,7 +68,7 @@
             android:id="@+id/sendSMS"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/send_sms_false"
+            android:text="@string/send_sms"
             android:onClick="sendButton"
             android:layout_gravity="center_horizontal" />
 
